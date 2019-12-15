@@ -1,0 +1,114 @@
+Django Configuration
+--------------------
+
+
+
+
+--------------------
+Command line/PowerShell
+--------------------
+Configuring django requires having prior knowledge about using
+command-line or powershell and powershell is the better.
+
+Some commands to use in (cmd,powershell or GitBash):
+
+dir /s /b /o:gn : list all files in cwd
+
+type nul > test.txt : create a file
+
+cd (change down a directory)
+cd .. (change up a directory)
+ls (list files in your current directory)
+pwd (print working directory)
+mkdir (make directory)
+rmdir (remove dir)
+touch (create a new file)
+rm (remove file)
+exit (exiting terminal)
+--------------------
+
+
+
+
+
+--------------------
+Virutal Environment
+--------------------
+Virutal environments are indispensable part of python, they are an
+isolated container containing all the software dependencies for a
+given project,so for your specfic project you can have different
+packages versions that are for your project directory only.
+
+Pipenv package used to manage this virutal environment.
+
+to install pipenv:
+pip install pipenv
+--------------------
+
+
+
+
+
+
+
+--------------------
+Install Django + project
+--------------------
+install django by pipenv for specfic version:
+$ pipenv install django==2.2.0
+
+install latest version:
+$ pipenv install django
+
+check django version:
+$ python -m django --version
+
+
+now at the project directory there will be 2 files
+(Pipfile & Pipfile.lock) this for virtual environment info,
+to activate the virtual run:
+$ pipenv shell
+
+To start a project :
+$ django-admin startproject test_project .
+
+the (.) at the end is optional , its that our project structure 
+do not repeat the main directory again and put the project inside it.
+
+To run the server:
+$ python manage.py runserver
+
+To step server press Ctrl+C
+
+to exit the virtual environment:
+$ exit
+--------------------
+
+
+
+--------------------
+Git + Github
+--------------------
+
+--------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
