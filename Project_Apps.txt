@@ -1,0 +1,119 @@
+Projects + Apps
+---------------
+
+
+
+
+--------------------
+Creating a project + files defining
+--------------------
+$ cd Desktop
+$ mkdir helloworld
+$ cd helloworld
+
+$ pipenv install django==3.0
+$ pipenv shell
+
+$ django-admin startproject helloworld_project .
+
+Project Files:
+__init__.py : is to tell python this is a package
+settings.py : file controls our project settings
+urls.py : tells Django which pages to build in response to a
+browser or url request.
+manage.py : is used to execute various django commands.
+--------------------
+
+
+
+
+
+--------------------
+python manage.py migrate
+--------------------
+migrate command creates a new SQLite database and any necessary
+database tables , according to the settings file created by the 
+startproject command.
+--------------------
+
+
+
+
+--------------------
+An App + files defining
+--------------------
+Django uses the concept of projects and apps to keep code clean
+and readable.
+A single project can contain many apps,each app focus on a 
+specfic task.
+Apps are designed to be portable, so one app can work for more than
+one project.
+
+Create App:
+$ python manage.py startapp pages
+
+App Files:
+admin.py is a configuration file for the built-in Django Admin app
+
+apps.py is a configuration file for the app itself
+
+migrations/ keeps track of any changes to our models.py file 
+so our database and models.py stay in sync
+
+models.py is where we define our database models which 
+Django automatically translates into database tables
+
+tests.py is for our app-specific tests
+
+views.py is where we handle the request/response logic for our web app
+
+
+Once we create an app, we add the app inside settings.py of project-level:
+# helloworld_project/settings.py
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'pages.apps.PagesConfig', # new
+]
+
+
+--------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

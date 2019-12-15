@@ -1,0 +1,184 @@
+Urls / Views / Templates
+------------------------
+
+
+-------------------
+The Cycle
+-------------------
+In Django 3 or 4 files needed to run a single page,
+In an App this files are : urls.py,views.py,models.py and a template file.
+
+
+HTTP Request/Response Cycle:
+URL -> view -> model -> template
+
+When a user requests a specfic page as homepage, the urls.py file maps to
+the appropriate view function which retrieves data from database via
+the model,formats it,bundles it up in an Http response and sends it to the
+cilent on a template.
+
+
+
+app/views.py:
+from django.shortcuts import render
+
+# Create your views here.
+def HomePageView(request):
+    return render(request,"pages/home.html");
+---
+
+
+app/urls.py:
+from django.urls import path
+
+from .views import homePageView
+
+urlpatterns = [
+    path('', homePageView, name='home')
+]
+---
+
+
+project/urls.py:
+from django.contrib import admin
+from django.urls import path, include # new
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('pages.urls')), # new
+]
+---
+
+
+Cycle starts from, project-level urls.py handles the user requests and directs
+to the suitable urls.py file of the app.
+
+urls.py then match the view with the url and creates urlPattern name for the url.
+
+views.py return the repsonse and returns the template with its data from database
+using model or normal data.
+
+-------------------
+
+
+
+
+
+
+
+
+
+-------------------
+Tempaltes
+-------------------
+Templates are HTML files , django have 2 options on storing templates:
+1)(Default option) is that django looks for the templates insdie templates directory
+, template structure:
+app -> templates -> app -> home.html
+
+2)Create a templates directory but at the project-level and place all the templates
+inside it, this requires us to edit the TEMPLATES list inside the settings.py:
+# pages_project/settings.py
+TEMPLATES = [
+    {
+        ...
+        'DIRS': [os.path.join(BASE_DIR, 'templates')], # new
+        ...
+    },
+]
+
+
+
+
+
+Template Tags:
+-------------
+Display Logic. E.g. {% if %}...{% endif %}
+Loop Control. E.g. {% for x in y %}...{% endfor %}
+Block Declaration. E.g. {% block content %}...{% endblock %}
+Content Import. E.g. {% include "header.html" %}
+Inheritance. E.g. {% extends "base.html" %}
+
+Simple Variable. E.g. {{ title }}
+Object Attribute. E.g. {{ page.title }}
+Dictionary Lookup. E.g. {{ dict.key }}
+List Index. E.g. {{ list_items.0 }}
+Method Call. E.g. {{ var.upper }}
+
+Change Case. E.g. {{ name|title }} or {{ units|lower }}
+Truncation. E.g. {{ post_content|truncatewords:50 }}
+Date Formatting. E.g. {{ order_date|date:"D M Y" }}
+List Slicing. E.g. {{ list_items|slice:":3" }}
+Default Values. E.g. {{ item_total|default:"nil" }}
+
+
+
+
+
+Extending Templates:
+-------------
+Websites pages may have similiar design but content is different, this can
+be easily handled using the Extending Feature.
+When creating our templates for pages, we can have a base template that contian
+the similiarties between all pages and other pages inheriate from this base file.
+
+
+
+base.html:
+<header>
+  <a href="{% url 'home' %}">Home</a> | <a href="{% url 'about' %}">About</a>
+</header>
+
+{% block content %}
+{% endblock %}
+---
+
+
+home.html:
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Homepage</h1>
+{% endblock content %}
+--
+
+
+
+about.html:
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>About page</h1>
+{% endblock %}
+--
+
+
+Here the base.html have our based design then it have a block content,
+here the child pages can load thier contents.
+At home.html/about.html this pages inheriate from base.html by using the
+extends code tag , then add thier content inside the block content.
+-------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -112,6 +112,12 @@ then copy the codes of pushing a git from commind line and run it.
 $ git remote add origin https://github.com/Azzam49/django-tutorials.git
 $ git push -u origin master
 
+if faced error pushing the repo,then SHH Keys needs configuring.
+
+To update the repo again:
+$ git add -A
+$ git commit -m "2nd update"
+$ git push -u origin master
 --------------------
 
 
