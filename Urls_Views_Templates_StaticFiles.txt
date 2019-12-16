@@ -166,7 +166,19 @@ extends code tag , then add thier content inside the block content.
 
 
 
+-------------------
+Static Files
+-------------------
+Static files are files as css,js,etc..
+this files need to be inside app directory, its structure is similiar 
+to templates.
+app -> static -> app -> main.css
 
+Then inside the template to load the static files,at the top of the
+template codes have : {% load static %}
+
+then link with <link rel="stylesheet" type="text/css" href="{% static 'pages/main.css' %}">
+-------------------
 
 
 

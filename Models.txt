@@ -1,0 +1,165 @@
+
+
+*Django ORM represents our database structure as classes , this
+classes are called models.
+
+*Model classes inheriate from models.Model,each class will have its
+own table in database and its attributes are different fields on the
+table.
+
+-
+python manage.py makemigrations
+
+python manage.py sqlmigrate blog 0001  (view sql of the operation)
+
+python manage.py migrate
+
+-
+
+*To be able to work with the models in more expanded way, we need
+to open 'django python shell'
+
+-
+# run django python shell
+python manage.py shell
+
+#import our post
+from blog.models import Post
+
+#import the default user class
+from django.contrib.auth.models import User
+
+# return all users
+User.objects.all()
+
+# returns first user
+User.objects.first()
+
+# returns last user
+User.objects.last()
+
+# returns the user after filtering #filter can return 0 or more results
+User.objects.filter(username='Azzam49')
+
+# filters and return the first result 
+User.objects.filter(username='Azzam49').first()
+
+user = User.objects.filter(username='Azzam49').first()
+
+# returns primary key value of the user
+user.id / user.pk
+
+#get() returns a single record only, if query returns 0 or more than
+#one record then error will be raised
+user = User.objects.get(id=1)
+
+
+# set a record
+post_1 = Post(title = 'blog 1',content = 'First post',authoer = user)
+
+# save the record
+post_1.save()
+
+# this shortcut sets and saves the record in one-line 
+Post.objects.create(title = 'blog 2',content = 'Second post',author =
+user)
+
+
+#to update a record
+Post.objects.first().update(username='Omar')
+
+#to delete a record
+Post.objects.first().delete()
+
+
+# add this to your model class,__str__ function used for string
+#representation of the object,it controls the output for us
+#when we retrieve the records as running 'Post.objects.all()'
+def __str__(self):
+	return self.title
+
+# get fields value using varaible
+post = Post.objects.first()
+post.content # 'First Content'
+
+# using the variable we can get fields of the foriegn key table
+post.author.email
+
+until mint-24 video-5
+
+# gets all posts posted by a specfic user
+#user. is the field having ForiegnKey at the Post model/table
+#post_set is the table that have the ForiegnKey of the User.
+#then .all() gets all records inside post table by the given user.
+user = User.objects.first()
+user.post_set.all()
+
+# creates a post by the given user
+user.post_set.create(title='Blog 3', content ='Third Blog')
+
+
+-
+
+
+
+
+
+
+--------------------------------------------
+Using Models at views to be rendered for the template
+--------------------------------------------
+now after creating the model and its fields on database and filling its table.
+we can now use it to be rendered for the template.
+
+
+from .models import Post
+
+def Home(request):
+context = {
+	'posts':Post.objects.all()
+}
+return render(request, 'pages/home.html', context)
+
+--------------------------------------------
+
+
+
+---------------
+Change date format for model fields inside template
+---------------
+https://docs.djangoproject.com/en/2.0/ref/templates/builtins/#date
+
+{{ post.date_posted |date:"F d, Y"  }}
+---------------
+
+
+
+
+-----------------
+Models at Admins Page
+-----------------
+To be able edit our models from Admin page we shall run registering codes
+inside admin.py file inisde the apps directory.
+
+from .models import Post
+
+admin.site.register(Post)
+-----------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

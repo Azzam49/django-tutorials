@@ -1,0 +1,35 @@
+Migrations & DataBases
+----------------------
+
+
+
+------------------
+Migrate
+------------------
+To prepare database changes(as create tables,edit,etc..) running this
+code will prepare the changes:
+python manage.py makemigrations
+
+To create default database with its tables / apply changes on database:
+python manage.py migrate
+
+
+Superuser - Admin
+------------------
+To register a new admin:
+python manage.py createsuperuser
+
+------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
