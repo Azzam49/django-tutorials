@@ -1,0 +1,287 @@
+
+Corey's Video-6 userRegistration
+--------------
+
+
+
+*Creating a form for user to be able create an account and routing all the
+stuff ,we will be doing it in a seprate new app (users) inside the project.
+
+
+-So now we create the new app (users) + add it on settings.py 
+
+*forms in usual requires validation of the inputs entered by user,check if required
+filleds if arn't filled and so on, Django take care of this at the backend.
+
+*So now we want create a form that users could register using it,we can use
+UserCreationForm which exists in django, this Form which is a Class is a built-in
+django provides if we want user to be able to register.
+
+
+
+
+
+-----views.py
+from django.shortcuts import render
+from django.contrib.auth.forms import UserCreationForm
+
+# Create your views here.
+
+def register(request):
+
+    form = UserCreationForm()
+    #instance Form from the UserCreationForm class
+
+    return render(request,'users/register.html',{'form':form})
+    #we return our form inside context dictonary to be able
+    #to access it from the template
+-------------
+here our views.py links the register.html template with django's built-in
+USerCreationForm which is passed inside the dictonary.
+-------------
+
+
+
+
+
+-----register.html
+{% extends "pages/base.html" %}
+#we could extend templates from different apps
+
+{% block content %}
+    <div class="content-section">
+        <form method="POST">
+            {% csrf_token %}#for security#must include it
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4"> Join Today</legend>
+                {{ form }}
+                #accessing instance form as a variable will create for
+                #us all the form ready
+
+            </fieldset>
+            <div class="form-group">
+                  <button class="btn btn-outline-info" type="submit">Sign Up</button>
+            </div>
+        </form>
+        <div class="border-top pt-3">
+            <small class="text-muted">
+                Already have an account? <a class="ml-2" href="#">Sign in</a>
+            </small>
+        </div>
+    </div>
+{% endblock content %}
+------------------
+
+
+
+
+
+
+*Now after getting our template ready and its view,we need to configure its
+url,for this we would configure its url at the project-level urls.py directly
+without having urls.py inside the 'users' app,as its simple one page registry form.
+
+
+
+------Project-Level urls.py
+from django.contrib import admin
+from django.urls import path, include
+from users import views as user_views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('',include("pages.urls")),
+    path('register/',user_views.register, name="register"),
+]
+
+---------------------------
+
+
+
+
+---------------------------
+Options for rendering our form instance:
+{{ form.as_table }} will render them as table cells wrapped in <tr> tags
+{{ form.as_p }} will render them wrapped in <p> tags
+{{ form.as_ul }} will render them wrapped in <li> tags
+---------------------------
+
+
+
+
+
+
+*Now running the server and going to 'register/',if we fill our form and press
+'SignUp' our data will be earsed ,we stay on same page and nothing happens:
+
+-This because our form directs us on the same page and runs the register view again,
+so we shall have 2 cases handling at the register view.
+
+-if the request we reciveing is GET then its normal page rendering,
+-if the request we reciveing is POST then we got re-directed from a form page and
+we have some data to validate and then do something with it.
+
+
+
+
+
+*Case Method=='POST': Now our view Saves data if its valid, retrieves the 
+username to show a message.success to the user, logic of 
+handling this alert messages is at the base.html above our 'block content'.
+
+
+
+------------views.py
+from django.shortcuts import render , redirect
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
+'''
+there are 5 messages tpyes:
+messages.debug
+messages.info
+messages.success
+messages.warning
+messages.error
+'''
+
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        #request.POST is that our form collects the
+        #data POSTED
+
+        if form.is_valid():
+            #case the data inserted by user
+            #is valid due to its respective fields
+
+            form.save()#saves the user
+
+            username = form.cleaned_data.get('username')
+            #the validated data will be inside the
+            #cleaned_data dictonary
+
+            #show an alert suitable message
+            messages.success(request,f'Account created for {username}')
+
+            return redirect('homePage')
+    else:
+        form = UserCreationForm()
+        # instance Form from the UserCreationForm class
+    return render(request,'users/register.html',{'form':form})
+    #we return our form inside context dictonary to be able
+    #to access it from the template
+--------------------
+
+
+
+--------messages handling on base.html
+	<div class="col-md-8">
+           <!--#alert messages-->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+          {% block content %}{% endblock %}
+        </div>
+
+-we check if form got messages,if yes then we loop through them for
+displaying, decoration is done by a bootstrap alert-class,
+'alert-{{ message.tags }}' this part controls the message type,
+as django and bootstrap have the same messages types.
+--------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+until mint-32 / video-6 / 
+whats left:
+-now all saving of user works fine but no email field yet
+-the form frontend needs better designing
+
+
+
+
+
+
+*in order to be able add more fields to the default user form
+'UserCreationForm', we would create a new file 'forms.py',this file
+will include a form class which inheriates from 'UserCreationForm'.
+
+
+
+------forms.py
+from django import forms
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
+
+
+class UserRegisterForm(UserCreationForm):
+    email = forms.EmailField()
+    
+    
+    class Meta:
+        model = User
+        fields = ["username","email","password1","password2"]
+--------------
+
+
+*Meta stands for Metadata.
+Metedata : is data that define the data.
+Meta class is used to transfer information such as (the model of form,
+fields and its ordering , etc..).
+
+
+
+
+
+
+
+
+
+
+
+*Now one way to style our forms inside the templates easily by bootstrap fashion,
+we need to install crispy
+$ pip install django-crispy-forms
+-then we need to add this app inside settings.py as 'crispy_forms'
+-also we need to change the default css of the crispy_forms, add this in settings.py:
+CRISPY_TEMPLATE_PACK = "bootstrap4"
+
+
+*To get crispy in work:
+load it on top : {% load crispy_forms_tags %}
+use {{ form|crispy }} in templates ,instead of {{ form.as_p }}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

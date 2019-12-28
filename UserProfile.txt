@@ -1,0 +1,144 @@
+
+
+User Profile
+-------------
+
+
+Django signals is to run functions at specfic actions time.
+
+
+-Goal is to make the user be able to upload a profile picture.
+
+*The Default 'User' model doesn't includet this,we will create a new
+'Profile' model, which have OnetoOnerelationShip.
+
+
+
+register->models.py
+---------------------
+from django.db import models
+from django.contrib.auth.models import User
+
+class Profile(models.Model):
+    user = models.OneToOneField(User,on_delete = models.CASCADE)
+    image = models.ImageField(default='default.jpg',upload_to='profile_pics')
+    #uses default.jpg as default picture, and uploads to 'profile_pics' directory
+
+    def __str__(self):
+        return f" {self.user.username} Profile"
+---------------------
+
+
+*then register your model inside admin.py:
+-----------
+from django.contrib import admin
+from .models import Profile
+# Register your models here.
+
+admin.site.register(Profile)
+-----------
+
+
+*Because our profile model have 'user' field,which has OnetoOneRelationShip,
+we could access the profile+image of user from the User object.
+-----------------
+from django.contrib.auth.models import User
+user = User.objects.filter(username='azzam49').first()
+user.profile.image #returns the image,for terminal returns the path
+user.profile.image.width #returns the image width
+user.profile.image.url #returns the location/url of the image
+-----------------
+
+*Now when user uploads an image , image will be saved in 'profile_pics'.
+-using this apporach all our models saves images to 'profile_pics',
+won't be good way to do it.
+---
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+#is the full path to a directory which
+#django will use to store files.
+
+MEDIA_URL = '/media/'
+#to specify the path for the browser to fetch
+#files from
+---
+
+*Now images will be saved at:
+media-->profile_pics-->image.jpg
+
+
+
+*To be able to access the images,there are 2 different ways,
+depending if you are at development/debug or production,
+for development,at urls.py of project-level:
+------
+from django.conf import settings
+from django.conf.urls.static import static
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+------
+
+
+
+*Now profiles and its pics functions well, but we need to manually to create
+profile for each user, 
+using signals.py we can auto run this , when a user is created.
+
+app->signals.py
+-----------------
+from django.db.models.signals import post_save
+#this is a signal that gets fired,after an
+#object is saved. we want get post_save when
+#a user is created.
+
+from django.contrib.auth.models import User
+#this will be the sender,will send the signal
+
+from django.dispatch import receiver
+#reciver,is gonna be the function ,that gets its
+#signal then perform a task.
+
+from .models import Profile
+#we need the Profile,as inside our reciver function
+#we will be created a Profile.
+
+
+#now this is a create_profile function that we want
+#to run everytime a user is created,
+#to tie this function with to run when user is created we need:
+@receiver(post_save,sender=User)
+def create_profile(sender,instance,created,**kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+#this works as: when a User is saved, 'post_save'
+# signal is send. then this signal is going to be
+#recived by the @receiver, then the
+# receiver/create_profile gets all its arguments
+# which 'post_save' signal passed to it.
+#-
+#instance is the instance of the User,
+#if created,its for if an User is created, then
+#craete a profile object for the user which is
+#created.
+
+
+
+
+#This is a save_profile functions which runs
+#whenever the User is saved.
+@receiver(post_save,sender=User)
+def save_profile(sender,instance,**kwargs):
+    instance.profile.save()
+#instance stands for the user.
+
+
+#!!!!
+#TO Get all this working,we need import signals
+#inside a ready() function,at our apps.py
+#!!!!
+-----------------
+
+
+
+
+

@@ -1,0 +1,23 @@
+
+crispy forms:
+
+1- pip install django-crispy-forms
+
+2- add on settings.py at apps : 'crispy_forms',
+
+3- CRISPY_TEMPLATE_PACK = 'bootstrap4', at settings.py
+
+4- at top of the template, {% load crispy_forms_tags %}
+
+
+
+static folder on project-level:
+
+1- add in settings.py,
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR,"static"),
+]
+
+2- on top of template, {% load staticfile %}
+
+3- inside <link> , {% static 'main.css' %}

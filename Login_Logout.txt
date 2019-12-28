@@ -1,0 +1,105 @@
+
+
+Login + Logout
+--------------
+
+
+*Django have a default built-in Login views.
+
+
+*Default view on project-level urls.py:
+
+	from django.contrib.auth import views as auth_views
+	
+	path('login/', auth_views.LoginView.as_view(),name="login-view")
+	path('logout/', auth_views.LogoutView.as_view(),name="logout-view")
+
+
+*This default auth_views from django are class-based-views,they will handle,
+the views,forms but not the templates.
+
+
+-Now going to 'login/' path raises error,this because by default django
+searches for login&logout templates inside a directory 'registration'.
+^
+-To change the default template location, on as_view() path argument
+template_name = 'your path'
+
+
+
+
+*Now in our template we can use {{ form|crispy }} which is provided by django.
+
+
+-after creating the template, if we login with correct user info, it will still
+raise error,login will direct us to 'accounts/profile' path which is 
+doesn't exists. this is default path to direct from django when logging in.
+-To change the default path of logging in directs, at settings.py put this:
+LOGIN_REDIRECT_URL = "home-view"
+
+
+<!-- comment -->
+*Now after login succesfully we will be directed to the HomePage,but no feedback
+message that tell use something like 'login was successfull'.
+-
+<!-- comment -->
+
+
+
+
+
+
+*Now after we able to login , navigation bar on base.html shall behave 
+differantly in case we are logged in it shall view 'logout' else shall 
+views 'login'
+-this is controlled by 'user' variable provided by django which as an
+attribute called 'is_authenticated'.
+ 		{% if user.is_authenticated %}
+                    <li><a href="{% url 'logout-view' %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                {% else %}
+                    <li><a href="{% url 'register-view' %}"><span class="glyphicon glyphicon-user"></span> Register</a></li>
+                    <li><a href="{% url 'login-view' %}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                {% endif %}
+
+
+
+
+
+*Now we need to put restriction on  routes that require the user to be
+logged-in in order to view them.
+-create profile view,view username on it,
+again we using 'user' variable, which is by default avaible on the template.
+<h1>{{ user.username }}</h1>
+
+
+
+*Now our profile page shall be accessed only if the user had logged-in,
+this can be done by providing our ProfileView by a @loginrequired decorator.
+---
+from django.contrib.auth.decorators import login_required
+@login_required
+---
+
+*now if we open profile page without login will raise error,because it 
+searches invalid path for the login page, we need to edit this 
+default path of the login_url, in settings.py:
+---
+LOGIN_URL = 'login-view'
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
